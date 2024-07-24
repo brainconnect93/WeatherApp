@@ -7,6 +7,7 @@ namespace WeatherApp.Controllers
     {
         private List<CityWeather> weather = new List<CityWeather>()
             {
+
                 new CityWeather()
                 {
                     CityUniqueCode = "°F",
