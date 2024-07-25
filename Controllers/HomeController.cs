@@ -1,52 +1,34 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WeatherApp.Models;
+using WeatherApp.WeatherService;
 
 namespace WeatherApp.Controllers
 {
     public class HomeController : Controller
     {
-        private List<CityWeather> weather = new List<CityWeather>()
-            {
+        private readonly IWeatherService _weatherService;
 
-                new CityWeather()
-                {
-                    CityUniqueCode = "°F",
-                    CityName = "London",
-                    DateAndTime = DateTime.Parse("08:00 AM"),
-                    TemperatureFehrenheit = 33
-                },
-                new CityWeather()
-                {
-                    CityUniqueCode = "°F",
-                    CityName = "New York",
-                    DateAndTime = DateTime.Parse("03:00 AM"),
-                    TemperatureFehrenheit = 60
-                },
-                new CityWeather()
-                {
-                    CityUniqueCode = "°F",
-                    CityName = "Paris",
-                    DateAndTime = DateTime.Parse("09:00 AM"),
-                    TemperatureFehrenheit = 82
-                }
-            };
+        public HomeController(IWeatherService weatherService)
+        {
+            _weatherService = weatherService;
+        }
 
         [Route("/")]
         public IActionResult Index()
         {
-            return View(weather);
+            var cities = _weatherService.GetWeatherDetails();
+            return View(cities);
         }
 
-        [Route("city-details/{name?}")]
-        public IActionResult Details(string? name)
+        [Route("city-details/{cityCode?}")]
+        public IActionResult CityCode(string? cityCode)
         {
-            if(name == null)
+            if (string.IsNullOrEmpty(cityCode))
             {
-                return Content("City name can't be empty");
+                return View();
             }
-            
-            CityWeather? matchingCity = weather.Where(temp =>
-            temp.CityName == name).FirstOrDefault();
+
+            CityWeather? matchingCity = _weatherService.GetWeatherByCityCode(cityCode);
             return View(matchingCity);
         }
     }
